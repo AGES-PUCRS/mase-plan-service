@@ -4,8 +4,10 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.pucrs.ages.mase.plan_service.client.UserClient;
 import br.pucrs.ages.mase.plan_service.dto.PlanExecutionDto;
 import br.pucrs.ages.mase.plan_service.dto.PlanTemplateDto;
+import br.pucrs.ages.mase.plan_service.entity.PlanExecution;
 import br.pucrs.ages.mase.plan_service.entity.PlanTemplate;
 import br.pucrs.ages.mase.plan_service.repository.PlanExecutionRepository;
 import br.pucrs.ages.mase.plan_service.repository.PlanTemplateRepository;
@@ -18,12 +20,14 @@ public class PlanService {
 	
 	private final PlanTemplateRepository planTemplateRepository;
 	private final PlanExecutionRepository planExecutionRepository;
+	private final UserClient userClient;
 	private final ObjectMapper objectMapper;
 	
-	public PlanService(PlanTemplateRepository planTemplateRepository,
-			PlanExecutionRepository planExecutionRepository, ObjectMapper objectMapper) {
+	public PlanService(PlanTemplateRepository planTemplateRepository, PlanExecutionRepository planExecutionRepository,
+			UserClient userClient, ObjectMapper objectMapper) {
 		this.planTemplateRepository = planTemplateRepository;
 		this.planExecutionRepository = planExecutionRepository;
+		this.userClient = userClient;
 		this.objectMapper = objectMapper;
 	}
 	

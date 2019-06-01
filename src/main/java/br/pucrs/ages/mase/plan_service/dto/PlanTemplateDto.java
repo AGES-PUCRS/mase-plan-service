@@ -2,10 +2,14 @@ package br.pucrs.ages.mase.plan_service.dto;
 
 import java.util.Map;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class PlanTemplateDto {
 	
-	private String description;
-	private Map<Integer, DisasterNotificationDto> disasterNotifications;
+	private @NotEmpty String description;
+	private @NotEmpty Map<Integer, @Valid @NotNull DisasterNotificationDto> disasterNotifications;
 	
 	public String getDescription() {
 		return description;

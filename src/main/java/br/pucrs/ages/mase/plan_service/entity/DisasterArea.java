@@ -1,17 +1,17 @@
 package br.pucrs.ages.mase.plan_service.entity;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 public class DisasterArea {
 	
-	private LocalDateTime latitude;
-	private LocalDateTime longitude;
+	private BigDecimal latitude;
+	private BigDecimal longitude;
 	
-	public LocalDateTime getLatitude() {
+	public BigDecimal getLatitude() {
 		return latitude;
 	}
 	
-	public LocalDateTime getLongitude() {
+	public BigDecimal getLongitude() {
 		return longitude;
 	}
 	

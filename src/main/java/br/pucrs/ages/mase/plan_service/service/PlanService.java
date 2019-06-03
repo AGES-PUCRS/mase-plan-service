@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import br.pucrs.ages.mase.plan_service.client.NotificationClient;
 import br.pucrs.ages.mase.plan_service.client.UserClient;
@@ -32,12 +33,13 @@ public class PlanService {
 	private final ObjectMapper objectMapper;
 	
 	public PlanService(PlanTemplateRepository planTemplateRepository, PlanExecutionRepository planExecutionRepository,
-			UserClient userClient, NotificationClient notiticationClient, ObjectMapper objectMapper) {
+			UserClient userClient, NotificationClient notificationClient, ObjectMapper objectMapper) {
 		this.planTemplateRepository = planTemplateRepository;
 		this.planExecutionRepository = planExecutionRepository;
 		this.userClient = userClient;
-		this.notificationClient = notiticationClient;
+		this.notificationClient = notificationClient;
 		this.objectMapper = objectMapper;
+		this.objectMapper.registerModule(new JavaTimeModule());
 	}
 	
 	public Mono<PlanTemplateDto> insert(PlanTemplateDto planTemplateDto) {

@@ -10,6 +10,12 @@ public class DisasterNotificationDto {
 	
 	private @NotEmpty List<@Valid @NotNull VolunteersNeededDto> volunteersNeeded;
 	
+	public DisasterNotificationDto() {}
+	
+	public DisasterNotificationDto(List<VolunteersNeededDto> volunteersNeeded) {
+		this.volunteersNeeded = volunteersNeeded;
+	}
+	
 	public List<VolunteersNeededDto> getVolunteersNeeded() {
 		return volunteersNeeded;
 	}

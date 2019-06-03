@@ -6,6 +6,12 @@ public class VolunteerDto {
 	
 	private @NotEmpty String mobileId;
 	
+	public VolunteerDto() {}
+	
+	public VolunteerDto(String mobileId) {
+		this.mobileId = mobileId;
+	}
+	
 	public String getMobileId() {
 		return mobileId;
 	}

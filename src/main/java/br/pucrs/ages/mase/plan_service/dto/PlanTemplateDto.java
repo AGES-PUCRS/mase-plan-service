@@ -11,6 +11,13 @@ public class PlanTemplateDto {
 	private @NotEmpty String description;
 	private @NotEmpty Map<Integer, @Valid @NotNull DisasterNotificationDto> disasterNotifications;
 	
+	public PlanTemplateDto() {}
+	
+	public PlanTemplateDto(String description, Map<Integer, DisasterNotificationDto> disasterNotifications) {
+		this.description = description;
+		this.disasterNotifications = disasterNotifications;
+	}
+	
 	public String getDescription() {
 		return description;
 	}

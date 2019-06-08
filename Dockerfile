@@ -3,4 +3,4 @@ WORKDIR opt/app
 COPY ./ /opt/app/
 RUN ./gradlew clean build
 WORKDIR build/libs
-ENTRYPOINT ["java","-jar", "plan-service-0.0.1-SNAPSHOT.jar" ]
+ENTRYPOINT ["java","-jar", "plan_service-0.0.1-SNAPSHOT.jar" ]

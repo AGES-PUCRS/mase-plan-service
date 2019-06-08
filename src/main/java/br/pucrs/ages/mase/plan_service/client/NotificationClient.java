@@ -2,6 +2,7 @@ package br.pucrs.ages.mase.plan_service.client;
 
 import java.nio.charset.Charset;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -13,8 +14,8 @@ import reactor.core.publisher.Mono;
 @Component
 public class NotificationClient {
 	
-	private static final String TITLE = "Precisamos de você!";
-	private static final String BODY = "Está ocorrendo um desastre, e precisamos da sua ajuda como voluntário!";
+	private @Value("${notification.title}") String title;
+	private @Value("${notification.body}") String body;
 	
 	public Mono<ClientResponse> notify(Flux<String> mobileIds) {
 		return WebClient.create("https://exp.host")
@@ -30,7 +31,7 @@ public class NotificationClient {
 	}
 	
 	private NotificationDto toNotification(String mobileId) {
-		return new NotificationDto(mobileId, TITLE, BODY);
+		return new NotificationDto(mobileId, title, body);
 	}
 	
 }

@@ -1,11 +1,21 @@
 package br.pucrs.ages.mase.plan_service.service;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import br.pucrs.ages.mase.plan_service.client.NotificationClient;
+import br.pucrs.ages.mase.plan_service.client.UserClient;
+import br.pucrs.ages.mase.plan_service.dto.DisasterNotificationDto;
 import br.pucrs.ages.mase.plan_service.dto.PlanExecutionDto;
 import br.pucrs.ages.mase.plan_service.dto.PlanTemplateDto;
+import br.pucrs.ages.mase.plan_service.dto.VolunteerDto;
+import br.pucrs.ages.mase.plan_service.dto.VolunteersNeededDto;
+import br.pucrs.ages.mase.plan_service.entity.PlanExecution;
 import br.pucrs.ages.mase.plan_service.entity.PlanTemplate;
 import br.pucrs.ages.mase.plan_service.repository.PlanExecutionRepository;
 import br.pucrs.ages.mase.plan_service.repository.PlanTemplateRepository;
@@ -18,13 +28,18 @@ public class PlanService {
 	
 	private final PlanTemplateRepository planTemplateRepository;
 	private final PlanExecutionRepository planExecutionRepository;
+	private final UserClient userClient;
+	private final NotificationClient notificationClient;
 	private final ObjectMapper objectMapper;
 	
-	public PlanService(PlanTemplateRepository planTemplateRepository,
-			PlanExecutionRepository planExecutionRepository, ObjectMapper objectMapper) {
+	public PlanService(PlanTemplateRepository planTemplateRepository, PlanExecutionRepository planExecutionRepository,
+			UserClient userClient, NotificationClient notificationClient, ObjectMapper objectMapper) {
 		this.planTemplateRepository = planTemplateRepository;
 		this.planExecutionRepository = planExecutionRepository;
+		this.userClient = userClient;
+		this.notificationClient = notificationClient;
 		this.objectMapper = objectMapper;
+		this.objectMapper.registerModule(new JavaTimeModule());
 	}
 	
 	public Mono<PlanTemplateDto> insert(PlanTemplateDto planTemplateDto) {
@@ -40,7 +55,34 @@ public class PlanService {
 	}
 	
 	public Mono<PlanExecutionDto> execute(PlanExecutionDto planExecutionDto) {
-		return Mono.error(new RuntimeException());
+		scheduleNotifications(planExecutionDto);
+		return save(planExecutionDto);
+	}
+	
+	private Mono<PlanExecutionDto> save(PlanExecutionDto planExecutionDto) {
+		return planExecutionRepository.save(objectMapper.convertValue(planExecutionDto, PlanExecution.class))
+				.subscribeOn(Schedulers.elastic())
+				.map(planExecution -> objectMapper.convertValue(planExecution, PlanExecutionDto.class));
+	}
+	
+	private void scheduleNotifications(PlanExecutionDto planExecutionDto) {
+		planExecutionDto.getDisasterNotifications()
+				.keySet()
+				.forEach(notificationTime -> scheduleNotification(
+						getMobileIds(planExecutionDto.getDisasterNotifications().get(notificationTime)),
+						notificationTime));
+	}
+	
+	private void scheduleNotification(Flux<String> mobileIds, Integer notificationTime) {
+		Executors.newSingleThreadScheduledExecutor()
+				.schedule(() -> notificationClient.notify(mobileIds), notificationTime, TimeUnit.SECONDS);
+	}
+	
+	private Flux<String> getMobileIds(DisasterNotificationDto disasterNotification) {
+		return Flux.fromStream(disasterNotification.getVolunteersNeeded().stream())
+				.map(VolunteersNeededDto::getOccupationNeeded)
+				.flatMap(userClient::getAllByOccupation)
+				.map(VolunteerDto::getMobileId);
 	}
 	
 }

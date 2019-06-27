@@ -8,6 +8,13 @@ public class VolunteersNeededDto {
 	private @NotEmpty String occupationNeeded;
 	private @Positive Integer numberOfVolunteersNeeded;
 	
+	public VolunteersNeededDto() {}
+	
+	public VolunteersNeededDto(String occupationNeeded, Integer numberOfVolunteersNeeded) {
+		this.occupationNeeded = occupationNeeded;
+		this.numberOfVolunteersNeeded = numberOfVolunteersNeeded;
+	}
+	
 	public String getOccupationNeeded() {
 		return occupationNeeded;
 	}
